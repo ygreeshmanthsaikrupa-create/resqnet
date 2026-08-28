@@ -1,0 +1,68 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0F172A] text-gray-100 font-sans antialiased;
+  }
+  
+  .bg-dark-900 {
+    background-color: #0F172A;
+  }
+  
+  .bg-dark-800 {
+    background-color: #1E293B;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0F172A; 
+}
+::-webkit-scrollbar-thumb {
+  background: #334155; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569; 
+}
+
+/* Leaflet Dark Popup Styles */
+.leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+.leaflet-popup-tip {
+  background: #1e293b !important;
+}
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.custom-leaflet-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Tactical Dark Tile Filter for OpenStreetMap (Zero Watermark) */
+.dark-tiles .leaflet-tile-pane {
+  filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.25);
+}
+
+/* Clean map container styling */
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+  background-color: #0b1120 !important;
+}
