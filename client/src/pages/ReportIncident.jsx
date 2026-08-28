@@ -6,10 +6,11 @@ import L from 'leaflet';
 import { 
   Droplets, Flame, Construction, Building, Mountain, 
   Heart, UserSearch, Zap, AlertCircle, ArrowRight, ArrowLeft, CheckCircle,
-  MapPin, Locate, Sparkles, Send, Upload, Image as ImageIcon, X, AlertTriangle, Radio
+  MapPin, Locate, Sparkles, Send, Upload, Image as ImageIcon, X, AlertTriangle, Radio, WifiOff
 } from 'lucide-react';
 import { api, uploadReportImage } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useOffline } from '../context/OfflineContext';
 import LoginModal from '../components/ui/LoginModal';
 
 const CATEGORIES = [
@@ -46,11 +47,14 @@ function LocationPicker({ position, onLocationSelect }) {
 export default function ReportIncident() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isOnline, queueReport } = useOffline();
+
   const [step, setStep] = useState(1);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isOfflineQueued, setIsOfflineQueued] = useState(false);
   const [serverError, setServerError] = useState('');
   const [errors, setErrors] = useState({});
 
@@ -135,10 +139,13 @@ export default function ReportIncident() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Show instant local preview
     setImagePreview(URL.createObjectURL(file));
-    setUploadingImage(true);
+    if (!isOnline) {
+      // In offline mode, keep the local preview and skip network upload
+      return;
+    }
 
+    setUploadingImage(true);
     try {
       const res = await uploadReportImage(file);
       if (res && res.imageUrl) {
@@ -146,7 +153,6 @@ export default function ReportIncident() {
       }
     } catch (err) {
       console.warn('Image upload error:', err.message);
-      // Fallback preview kept
     } finally {
       setUploadingImage(false);
     }
@@ -158,55 +164,91 @@ export default function ReportIncident() {
   };
 
   const handleQuickSOS = async () => {
-    if (!user) {
-      setIsLoginOpen(true);
-      return;
-    }
+    const payload = {
+      category: 'medical_emergency',
+      title: 'URGENT SOS: Immediate Rescue Required',
+      description: 'Citizen in critical emergency requiring immediate response assistance.',
+      severity: 5,
+      peopleAffected: 1,
+      location: {
+        lat: pinPosition[0],
+        lng: pinPosition[1],
+        address: 'Emergency GPS Coordinates'
+      },
+      reportedBy: user?.id || 'citizen_offline'
+    };
+
     setLoading(true);
     setServerError('');
+
+    if (!isOnline) {
+      // Offline fallback
+      queueReport(payload);
+      setIsOfflineQueued(true);
+      setSuccess(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setIsLoginOpen(true);
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.post('/reports', {
-        category: 'medical_emergency',
-        title: 'URGENT SOS: Immediate Rescue Required',
-        description: 'Citizen in critical emergency requiring immediate response assistance.',
-        severity: 5,
-        peopleAffected: 1,
-        location: {
-          lat: pinPosition[0],
-          lng: pinPosition[1],
-          address: 'Emergency GPS Coordinates'
-        },
-        reportedBy: user.id
-      });
+      await api.post('/reports', payload);
+      setIsOfflineQueued(false);
       setSuccess(true);
     } catch (err) {
-      setServerError(err.message || 'Failed to dispatch SOS alert');
+      // Fallback to queue if server fails
+      queueReport(payload);
+      setIsOfflineQueued(true);
+      setSuccess(true);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSubmit = async () => {
-    if (!user) {
-      setIsLoginOpen(true);
-      return;
-    }
+    const payload = {
+      ...formData,
+      imageUrl: uploadedImageUrl,
+      location: {
+        lat: pinPosition[0],
+        lng: pinPosition[1],
+        address: formData.address
+      },
+      reportedBy: user?.id || 'citizen_offline'
+    };
+
     setLoading(true);
     setServerError('');
+
+    // If device is offline, queue locally right away
+    if (!isOnline) {
+      queueReport(payload);
+      setIsOfflineQueued(true);
+      setSuccess(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setIsLoginOpen(true);
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.post('/reports', {
-        ...formData,
-        imageUrl: uploadedImageUrl,
-        location: {
-          lat: pinPosition[0],
-          lng: pinPosition[1],
-          address: formData.address
-        },
-        reportedBy: user.id
-      });
+      await api.post('/reports', payload);
+      setIsOfflineQueued(false);
       setSuccess(true);
     } catch (err) {
-      setServerError(err.message || 'Failed to submit report. Please check required fields.');
+      // Network failed mid-submit -> fallback to offline queue
+      queueReport(payload);
+      setIsOfflineQueued(true);
+      setSuccess(true);
     } finally {
       setLoading(false);
     }
@@ -220,21 +262,34 @@ export default function ReportIncident() {
           animate={{ scale: 1, opacity: 1 }}
           className="bg-dark-800 p-8 rounded-3xl border border-gray-700 max-w-md w-full text-center shadow-2xl"
         >
-          <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto mb-4 animate-bounce" />
-          <h2 className="text-2xl font-extrabold text-white mb-2">Emergency Report Dispatched</h2>
-          <p className="text-gray-300 text-sm mb-6 leading-relaxed">
-            Your incident has been pinned to the Live Threat Map and broadcasted to emergency coordinators & volunteers.
-          </p>
+          {isOfflineQueued ? (
+            <>
+              <WifiOff className="w-16 h-16 text-amber-400 mx-auto mb-4 animate-bounce" />
+              <h2 className="text-2xl font-extrabold text-white mb-2">Report Queued Offline</h2>
+              <p className="text-gray-300 text-xs mb-6 leading-relaxed">
+                ⚡ <strong>Low Connectivity Mode:</strong> Your report is safely stored in local encrypted storage. It will automatically synchronize to response crews as soon as connectivity returns.
+              </p>
+            </>
+          ) : (
+            <>
+              <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto mb-4 animate-bounce" />
+              <h2 className="text-2xl font-extrabold text-white mb-2">Emergency Report Dispatched</h2>
+              <p className="text-gray-300 text-xs mb-6 leading-relaxed">
+                Your incident has been pinned to the Live Threat Map and broadcasted to emergency coordinators & volunteers.
+              </p>
+            </>
+          )}
+
           <div className="flex gap-3">
             <button 
               onClick={() => navigate('/map')}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-600/30"
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-600/30 text-xs"
             >
               View on Live Map
             </button>
             <button 
               onClick={() => navigate('/my-reports')}
-              className="flex-1 bg-dark-700 hover:bg-dark-600 text-white font-bold py-3 rounded-xl transition"
+              className="flex-1 bg-dark-700 hover:bg-dark-600 text-white font-bold py-3 rounded-xl transition text-xs"
             >
               Track Reports
             </button>
@@ -275,6 +330,11 @@ export default function ReportIncident() {
           <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5" /> Real-time Response Dispatch
           </span>
+          {!isOnline && (
+            <span className="text-xs text-amber-400 font-bold flex items-center gap-1 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+              <WifiOff className="w-3.5 h-3.5" /> Offline Queuing Active
+            </span>
+          )}
         </div>
         <h1 className="text-3xl font-extrabold text-white">Report Disaster Incident</h1>
         <p className="text-gray-400 text-sm mt-1">Submit ground observations with photos and exact coordinates to guide rescue operations.</p>
@@ -638,10 +698,15 @@ export default function ReportIncident() {
                 )}
               </div>
 
-              {!user && (
+              {!isOnline ? (
+                <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-xl text-amber-300 text-xs flex items-center gap-2">
+                  <WifiOff className="w-4 h-4 flex-shrink-0 text-amber-400" />
+                  <span>Offline Mode: Submitting will securely store your report on device and transmit as soon as connectivity is restored.</span>
+                </div>
+              ) : !user && (
                 <div className="p-3.5 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span>You must be signed in to submit emergency reports. Clicking submit will open a 1-click sign in.</span>
+                  <span>You must be signed in to submit live reports. Submitting will prompt a 1-click sign in.</span>
                 </div>
               )}
 
@@ -656,10 +721,20 @@ export default function ReportIncident() {
                 <button
                   disabled={loading}
                   onClick={handleSubmit}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl flex items-center gap-2 transition shadow-xl shadow-red-600/40 disabled:opacity-50"
+                  className={`px-8 py-3 font-bold text-sm rounded-xl flex items-center gap-2 transition shadow-xl disabled:opacity-50 ${
+                    !isOnline
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/40'
+                      : 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/40'
+                  }`}
                 >
                   <Send className="w-4 h-4" />
-                  <span>{loading ? 'Dispatching to Response Crews...' : 'Submit Emergency Report'}</span>
+                  <span>
+                    {loading
+                      ? 'Processing Report...'
+                      : !isOnline
+                      ? 'Queue Report Offline (Auto-Sync)'
+                      : 'Submit Emergency Report'}
+                  </span>
                 </button>
               </div>
             </motion.div>

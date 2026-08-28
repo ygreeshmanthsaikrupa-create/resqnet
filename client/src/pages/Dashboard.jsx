@@ -248,6 +248,19 @@ export default function Dashboard() {
           <span>Citizen Safety Portal</span>
           {activeTab === 'citizen' && <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full uppercase">Active</span>}
         </button>
+
+        <button
+          onClick={() => setActiveTab('prediction')}
+          className={`flex-1 min-w-[200px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-lg font-bold text-sm transition-all ${
+            activeTab === 'prediction'
+              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/20'
+              : 'text-gray-400 hover:text-white hover:bg-dark-700'
+          }`}
+        >
+          <Activity className="w-4 h-4" />
+          <span>AI Early Warning & Predictions</span>
+          {activeTab === 'prediction' && <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full uppercase">Active</span>}
+        </button>
       </div>
 
       {/* ========================================================================= */}
@@ -794,6 +807,203 @@ export default function Dashboard() {
                   </a>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 4. AI EARLY WARNING & PREDICTION TELEMETRY TAB */}
+      {/* ========================================================================= */}
+      {activeTab === 'prediction' && (
+        <div className="space-y-8 animate-fadeIn">
+          {/* Environmental Sensor Telemetry Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-dark-800 border border-blue-500/30 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3">
+                <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  <Droplets className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-red-600/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full animate-pulse">
+                  CRITICAL SURGE
+                </span>
+              </div>
+              <div className="text-3xl font-extrabold text-white font-mono mb-1">145 mm/hr</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Rainfall Precipitation</div>
+              <div className="w-full bg-dark-900 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-red-500 h-full rounded-full" style={{ width: '85%' }}></div>
+              </div>
+              <div className="text-[11px] text-gray-400 mt-2 font-mono">Threshold: 100 mm/hr (Exceeded)</div>
+            </div>
+
+            <div className="bg-dark-800 border border-red-500/30 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3">
+                <div className="p-2.5 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20">
+                  <Activity className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-full animate-pulse">
+                  CREST DANGER
+                </span>
+              </div>
+              <div className="text-3xl font-extrabold text-white font-mono mb-1">8.50 m</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">River Basin Water Gauge</div>
+              <div className="w-full bg-dark-900 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-red-500 h-full rounded-full" style={{ width: '92%' }}></div>
+              </div>
+              <div className="text-[11px] text-gray-400 mt-2 font-mono">Floodwall Limit: 7.00 m (+1.5m overflow)</div>
+            </div>
+
+            <div className="bg-dark-800 border border-yellow-500/30 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3">
+                <div className="p-2.5 rounded-xl bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                  <Radio className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full">
+                  HIGH VELOCITY
+                </span>
+              </div>
+              <div className="text-3xl font-extrabold text-white font-mono mb-1">115 km/h</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cyclone Wind Velocity</div>
+              <div className="w-full bg-dark-900 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-yellow-500 h-full rounded-full" style={{ width: '70%' }}></div>
+              </div>
+              <div className="text-[11px] text-gray-400 mt-2 font-mono">Bay of Bengal Cyclone Storm Track</div>
+            </div>
+
+            <div className="bg-dark-800 border border-orange-500/30 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="flex justify-between items-start mb-3">
+                <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                  <Flame className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full">
+                  SOIL SATURATION
+                </span>
+              </div>
+              <div className="text-3xl font-extrabold text-white font-mono mb-1">88.4%</div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Landslide Vulnerability Index</div>
+              <div className="w-full bg-dark-900 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-orange-500 h-full rounded-full" style={{ width: '88%' }}></div>
+              </div>
+              <div className="text-[11px] text-gray-400 mt-2 font-mono">Hill Slope Shear Stability Alert</div>
+            </div>
+          </div>
+
+          {/* 24-Hour Predictive Rise Curve */}
+          <div className="bg-dark-800 border border-gray-700/80 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+              <div>
+                <h3 className="text-xl font-extrabold text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-purple-400" />
+                  <span>24-Hour Predictive Water Level & Inundation Curve</span>
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  AI neural model extrapolating upstream catchment discharge against downstream embankment thresholds.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl">
+                  Forecast Confidence: 94.8%
+                </span>
+              </div>
+            </div>
+
+            <div className="h-72 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={[
+                    { time: '00:00', actual: 4.2, predicted: 4.2, threshold: 7.0 },
+                    { time: '04:00', actual: 5.1, predicted: 5.1, threshold: 7.0 },
+                    { time: '08:00', actual: 6.3, predicted: 6.3, threshold: 7.0 },
+                    { time: '12:00 (Now)', actual: 8.5, predicted: 8.5, threshold: 7.0 },
+                    { time: '+4h (16:00)', predicted: 9.8, threshold: 7.0 },
+                    { time: '+8h (20:00)', predicted: 10.4, threshold: 7.0 },
+                    { time: '+12h (00:00)', predicted: 9.6, threshold: 7.0 },
+                    { time: '+24h (12:00)', predicted: 7.8, threshold: 7.0 },
+                  ]}
+                >
+                  <defs>
+                    <linearGradient id="predictedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                  <XAxis dataKey="time" stroke="#94a3b8" fontSize={11} />
+                  <YAxis stroke="#94a3b8" fontSize={11} unit="m" domain={[0, 12]} />
+                  <RechartsTooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }} />
+                  <Area type="monotone" dataKey="predicted" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#predictedGrad)" name="Water Level Forecast (m)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="mt-4 p-4 bg-red-950/40 border border-red-500/30 rounded-2xl text-xs text-red-200 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <span>
+                  <strong>PREDICTED CREST PEAK IN 6 HOURS:</strong> Water level projected to peak at <strong>10.4m</strong> (+3.4m over safety embankment). Preemptive evacuation of Zone A & B mandatory.
+                </span>
+              </div>
+              <a
+                href="/map"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold flex-shrink-0 transition text-xs"
+              >
+                Inspect Zone on Map
+              </a>
+            </div>
+          </div>
+
+          {/* AI Risk Score Table Across Zones */}
+          <div className="bg-dark-800 border border-gray-700/80 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <h3 className="text-xl font-extrabold text-white mb-2">Zone-by-Zone Predictive Risk Breakdown</h3>
+            <p className="text-xs text-gray-400 mb-6">Weighted risk calculation taking into account historical vulnerability, population density, elevation & real-time telemetry.</p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-gray-700 text-gray-400 font-bold uppercase tracking-wider">
+                    <th className="pb-3">Zone / Location</th>
+                    <th className="pb-3">Primary Threat</th>
+                    <th className="pb-3">AI Calculated Risk</th>
+                    <th className="pb-3">Water Level / Sensor</th>
+                    <th className="pb-3">Trend</th>
+                    <th className="pb-3 text-right">Recommended Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800 text-gray-200">
+                  <tr className="hover:bg-dark-700/40 transition">
+                    <td className="py-3.5 font-bold text-white">Zone A - Krishna River Basin (India)</td>
+                    <td><span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded font-bold">Flood Inundation</span></td>
+                    <td><span className="font-mono font-extrabold text-red-400 text-sm">91% (CRITICAL)</span></td>
+                    <td className="font-mono">8.50m (Thresh: 7.0m)</td>
+                    <td><span className="text-red-400 font-bold">↑ Increasing Rapidly</span></td>
+                    <td className="text-right"><span className="text-xs font-bold text-red-400 bg-red-600/10 px-2.5 py-1 rounded-lg border border-red-500/20">Evacuation Mandatory</span></td>
+                  </tr>
+                  <tr className="hover:bg-dark-700/40 transition">
+                    <td className="py-3.5 font-bold text-white">Zone B - Eluru Road Corridor (India)</td>
+                    <td><span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded font-bold">Urban Waterlogging</span></td>
+                    <td><span className="font-mono font-extrabold text-orange-400 text-sm">74% (HIGH)</span></td>
+                    <td className="font-mono">5.20m (Thresh: 5.0m)</td>
+                    <td><span className="text-orange-400 font-bold">↑ Rising</span></td>
+                    <td className="text-right"><span className="text-xs font-bold text-orange-400 bg-orange-600/10 px-2.5 py-1 rounded-lg border border-orange-500/20">Roads Diverted</span></td>
+                  </tr>
+                  <tr className="hover:bg-dark-700/40 transition">
+                    <td className="py-3.5 font-bold text-white">Zone C - Benz Circle Area (India)</td>
+                    <td><span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-400 rounded font-bold">Traffic & Power Outage</span></td>
+                    <td><span className="font-mono font-extrabold text-yellow-400 text-sm">68% (HIGH)</span></td>
+                    <td className="font-mono">4.80m (Thresh: 5.0m)</td>
+                    <td><span className="text-yellow-400 font-bold">→ Stable</span></td>
+                    <td className="text-right"><span className="text-xs font-bold text-yellow-400 bg-yellow-600/10 px-2.5 py-1 rounded-lg border border-yellow-500/20">Standby Crews</span></td>
+                  </tr>
+                  <tr className="hover:bg-dark-700/40 transition">
+                    <td className="py-3.5 font-bold text-white">Zone D - Kanuru Residential (India)</td>
+                    <td><span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded font-bold">Drainage Surcharging</span></td>
+                    <td><span className="font-mono font-extrabold text-emerald-400 text-sm">45% (MEDIUM)</span></td>
+                    <td className="font-mono">3.10m (Thresh: 4.5m)</td>
+                    <td><span className="text-emerald-400 font-bold">↓ Receding</span></td>
+                    <td className="text-right"><span className="text-xs font-bold text-emerald-400 bg-emerald-600/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">Pumping Active</span></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

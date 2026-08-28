@@ -2,11 +2,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
+import { OfflineProvider } from './context/OfflineContext';
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import EmergencyDisclaimer from './components/ui/EmergencyDisclaimer';
 import SimulationBar from './components/SimulationBar';
 import LiveAlertToast from './components/ui/LiveAlertToast';
+import OfflineBanner from './components/ui/OfflineBanner';
 
 import Landing from './pages/Landing';
 import MapView from './pages/MapView';
@@ -31,6 +33,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-dark-900 text-gray-100 font-sans selection:bg-blue-500/30 overflow-x-hidden">
+      <OfflineBanner />
       {!isMapPage && <EmergencyDisclaimer />}
       <LiveAlertToast />
       <Navbar />
@@ -63,7 +66,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <SocketProvider>
-          <AppContent />
+          <OfflineProvider>
+            <AppContent />
+          </OfflineProvider>
         </SocketProvider>
       </AuthProvider>
     </BrowserRouter>

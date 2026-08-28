@@ -1,6 +1,21 @@
-# ResQNet — Intelligent Worldwide Disaster Response Platform
+# ResQNet — Intelligent Disaster Prediction & Community Response Platform
 
-> **"An intelligent disaster-response ecosystem that connects AI prediction, ground observers, geospatial threat mapping, and emergency relief action in real time."**
+> **Problem Statement #1: Disaster Prediction and Community Response System**
+> *"A technology-driven disaster management platform that analyses available environmental, weather, geographical, and community-generated data to identify potential risks and support faster emergency response."*
+
+---
+
+## 🎯 Problem Statement #1 — Feature Compliance Matrix
+
+| # | Expected Feature | Implementation in ResQNet |
+|---|------------------|----------------------------|
+| **1** | **Risk prediction or early-warning mechanism** | ✅ Weighted multi-factor risk scoring engine (`predictionService.js`), 24-hour predictive inundation curves, and automated early-warning alerts (`alertEngine.js`). |
+| **2** | **Interactive map showing vulnerable locations** | ✅ 100% Free Live Threat Map (`MapView.jsx`) with GeoJSON hazard polygons, colored severity tiers (Critical/High/Medium/Low), global region jumpers, and zero API keys needed. |
+| **3** | **Identification of nearby shelters, hospitals & resources** | ✅ Emergency resource locator (`Resources.jsx`) with live capacity tracking, distance sorting, and turn-by-turn navigation routing. |
+| **4** | **Real-time notifications and alerts** | ✅ Bidirectional Socket.io broadcast bus (`LiveAlertToast.jsx` & `AlertCenter.jsx`) pushing verified emergency directives and citizen notifications instantly. |
+| **5** | **Dashboard for administrators / rescue teams** | ✅ 4-in-1 Operations Center (`Dashboard.jsx`): Authority Command Center (Admin), Volunteer Operations Hub, Citizen Safety Portal, and AI Early Warning Telemetry. |
+| **6** | **Prioritization of rescue requests based on severity** | ✅ Mathematical priority scorer (`priorityScorer.js`) ranking triage requests by severity, people trapped, zone risk, confidence, and time sensitivity. |
+| **7** | **Offline / low-connectivity functionality** | ✅ Offline-first PWA architecture (`sw.js`, `OfflineContext.jsx`), encrypted local incident queuing, offline shelter directory, and automatic background sync upon reconnection. |
 
 ---
 
@@ -12,10 +27,7 @@
 - **⚡ Real-Time Broadcasting**: Socket.io bidirectional event bus emitting instant alerts, status changes, and priority recalculations to all connected clients with floating notifications.
 - **📸 Real Field Photo Uploads**: Multi-part image processing via `multer` storing incident evidence to `/uploads`.
 - **🚨 1-Tap SOS Emergency Dispatch**: Quick distress button for citizens in immediate peril.
-- **📊 3-in-1 Multi-Role Operational Dashboards**:
-  - **Authority Command Center (Admin)**: Incident triage queue, priority scoring algorithm, and emergency broadcast dispatch.
-  - **Volunteer Operations Hub (Volunteer)**: Field verification desk and live shelter occupancy adjusters (`+5` / `-5`).
-  - **Citizen Safety Portal (Citizen)**: Safety check-in, nearest evacuation shelter routing, and local hazard risk index.
+- **⚡ Offline Mode with Auto-Sync**: Submit ground reports even with zero internet; queued reports automatically transmit when connectivity is restored.
 
 ---
 
@@ -69,7 +81,7 @@ node test_resqnet_e2e.js
 
 | Role | Username | Password | Default Capabilities |
 |------|----------|----------|----------------------|
-| **👤 Citizen** | `citizen` | `citizen123` | Submit hazard reports with photos/GPS, mark safe, view alerts |
+| **👤 Citizen** | `citizen` | `citizen123` | Submit hazard reports with photos/GPS, mark safe, view alerts, queue reports offline |
 | **🤝 Volunteer** | `volunteer` | `volunteer123` | Field triage reports, update shelter occupancy (`+5/-5`), relief log |
 | **🛡️ Admin** | `admin` | `admin123` | Issue live broadcasts, run simulation scenarios, override priority |
 
